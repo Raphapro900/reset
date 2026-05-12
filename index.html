@@ -1,99 +1,380 @@
-<!-- Este es el código COMPLETO del juego que DEBES usar -->
-<!-- (solo muestro la parte modificada del sistema de bloqueo) -->
-
-<script type="module">
-  // ==================== SISTEMA DE BLOQUEO MEJORADO ====================
-  const LOCK_STORAGE_KEY = "gameLocked_V4";
-  const RESET_SIGNAL_KEY = "resetSignal";  // ← CLAVE PARA LEER LA SEÑAL
-  
-  function setGameLocked() {
-    localStorage.setItem(LOCK_STORAGE_KEY, "true");
-    // Limpiar señal antigua al bloquear
-    localStorage.removeItem(RESET_SIGNAL_KEY);
-    console.log("🔒 Juego bloqueado");
-  }
-
-  function isGameLocked() {
-    return localStorage.getItem(LOCK_STORAGE_KEY) === "true";
-  }
-
-  function clearGameLocked() {
-    localStorage.removeItem(LOCK_STORAGE_KEY);
-    console.log("🔓 Juego desbloqueado");
-  }
-  
-  // Verificar si hay señal de reset pendiente
-  function checkForResetSignal() {
-    const signal = localStorage.getItem(RESET_SIGNAL_KEY);
-    if (signal === "reset") {
-      console.log("✅ SEÑAL DE RESET ENCONTRADA en localStorage");
-      localStorage.removeItem(RESET_SIGNAL_KEY); // Limpiar después de leer
-      clearGameLocked();
-      return true;
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reset Panel - Ms. BananaS</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
     }
-    return false;
-  }
-
-  const lockScreen = document.getElementById('lockScreen');
-  const gameContent = document.getElementById('gameContent');
-  const menuMusic = document.getElementById('menuMusic');
-  const roomMusic = document.getElementById('roomMusic');
-  const resetSignalDiv = document.getElementById('resetSignal');
-
-  function stopAllGameMusic() {
-    if (menuMusic) { menuMusic.pause(); menuMusic.currentTime = 0; }
-    if (roomMusic) { roomMusic.pause(); roomMusic.currentTime = 0; }
-  }
-
-  // Verificar estado al cargar
-  if (isGameLocked()) {
-    // Primero verificar si hay señal de reset
-    if (checkForResetSignal()) {
-      // Hay señal, desbloquear y recargar
-      window.location.reload();
-    } else {
-      gameContent.style.display = 'none';
-      lockScreen.style.display = 'flex';
-      stopAllGameMusic();
-      startPollingForReset();  // Seguir polling por si acaso
-    }
-  } else {
-    gameContent.style.display = 'block';
-    lockScreen.style.display = 'none';
-    iniciarJuego();
-  }
-
-  // Polling al localStorage (más confiable que fetch)
-  function startPollingForReset() {
-    const resetSignalDiv = document.getElementById('resetSignal');
-    let pollInterval;
-    let attempts = 0;
     
-    function checkLocalStorageSignal() {
-      attempts++;
-      resetSignalDiv.innerHTML = `🔄 Buscando señal de reset... (Intento ${attempts})<br>📡 Revisando en localStorage...`;
-      
-      const signal = localStorage.getItem(RESET_SIGNAL_KEY);
-      if (signal === "reset") {
-        resetSignalDiv.innerHTML = '✅ ¡SEÑAL DE RESET DETECTADA! Desbloqueando...';
-        console.log("✅ SEÑAL DE RESET RECIBIDA desde localStorage");
-        localStorage.removeItem(RESET_SIGNAL_KEY);
-        clearInterval(pollInterval);
-        clearGameLocked();
+    body {
+      min-height: 100vh;
+      background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #0a0a0a 100%);
+      font-family: 'Courier New', monospace;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+    
+    .container {
+      background: rgba(0, 0, 0, 0.9);
+      border: 3px solid #FF6600;
+      border-radius: 20px;
+      padding: 40px;
+      max-width: 550px;
+      width: 100%;
+      text-align: center;
+      box-shadow: 0 0 60px rgba(255, 102, 0, 0.4);
+      backdrop-filter: blur(5px);
+    }
+    
+    h1 {
+      font-size: 2.8rem;
+      color: #FFD700;
+      text-shadow: 0 0 15px #FF6600;
+      margin-bottom: 10px;
+      letter-spacing: 2px;
+    }
+    
+    .subtitle {
+      color: #FFAA44;
+      font-size: 0.9rem;
+      margin-bottom: 20px;
+      letter-spacing: 1px;
+    }
+    
+    .banana-icon {
+      font-size: 5rem;
+      margin: 20px 0;
+      animation: float 2s ease-in-out infinite;
+      cursor: pointer;
+      display: inline-block;
+      transition: transform 0.2s;
+    }
+    
+    .banana-icon:hover {
+      transform: scale(1.1);
+      filter: drop-shadow(0 0 15px #ffaa00);
+    }
+    
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+    
+    .status {
+      background: #0a0a0a;
+      border: 1px solid #FF6600;
+      border-radius: 12px;
+      padding: 20px;
+      margin: 25px 0;
+    }
+    
+    .status p {
+      color: #FFAA44;
+      font-size: 0.9rem;
+      margin-bottom: 10px;
+    }
+    
+    .status .locked {
+      color: #ff4444;
+      font-weight: bold;
+      font-size: 1.4rem;
+      text-shadow: 0 0 5px #ff0000;
+    }
+    
+    .status .unlocked {
+      color: #44ff44;
+      font-weight: bold;
+      font-size: 1.4rem;
+      text-shadow: 0 0 5px #00ff00;
+    }
+    
+    .status .waiting {
+      color: #ffaa44;
+      font-weight: bold;
+      font-size: 1.4rem;
+      text-shadow: 0 0 5px #ffaa00;
+    }
+    
+    button {
+      background: #1a0a00;
+      color: #FFD700;
+      border: 2px solid #FF6600;
+      padding: 15px 30px;
+      font-size: 1.2rem;
+      font-family: 'Courier New', monospace;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      border-radius: 50px;
+      margin: 10px;
+      width: 220px;
+    }
+    
+    button:hover {
+      background: #FF6600;
+      color: #1a0a00;
+      transform: scale(1.05);
+      box-shadow: 0 0 25px #FF6600;
+    }
+    
+    .reset-btn {
+      background: #ff3300;
+      color: white;
+      border-color: #ffaa00;
+    }
+    
+    .reset-btn:hover {
+      background: #ff5500;
+      box-shadow: 0 0 30px #ff3300;
+    }
+    
+    .check-btn {
+      background: #1a3a1a;
+      border-color: #44aa44;
+    }
+    
+    .check-btn:hover {
+      background: #44aa44;
+      color: #1a0a00;
+      box-shadow: 0 0 20px #44ff44;
+    }
+    
+    .signal-badge {
+      margin-top: 25px;
+      padding: 12px;
+      background: #0a0a0a;
+      border-radius: 10px;
+      font-size: 0.8rem;
+      color: #888;
+      border: 1px solid #333;
+    }
+    
+    .signal-badge code {
+      background: #1a1a1a;
+      padding: 4px 10px;
+      border-radius: 6px;
+      color: #ffaa44;
+      font-size: 1rem;
+    }
+    
+    .signal-value {
+      font-size: 1.2rem;
+      font-weight: bold;
+      color: #ffaa44;
+      margin: 5px 0;
+    }
+    
+    footer {
+      margin-top: 30px;
+      font-size: 0.7rem;
+      color: #555;
+    }
+    
+    hr {
+      border-color: #FF6600;
+      margin: 20px 0;
+    }
+    
+    .success-message {
+      background: #00aa44;
+      color: white;
+      padding: 10px;
+      border-radius: 8px;
+      margin-top: 15px;
+      animation: fadeOut 3s ease-out forwards;
+    }
+    
+    @keyframes fadeOut {
+      0% { opacity: 1; }
+      70% { opacity: 1; }
+      100% { opacity: 0; visibility: hidden; }
+    }
+    
+    .error-message {
+      background: #aa3300;
+      color: white;
+      padding: 10px;
+      border-radius: 8px;
+      margin-top: 15px;
+      animation: fadeOut 3s ease-out forwards;
+    }
+    
+    .button-group {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 15px;
+      margin: 20px 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="banana-icon" id="bananaIcon">🍌</div>
+    <h1>Ms. BananaS</h1>
+    <div class="subtitle">RESET CONTROL PANEL</div>
+    
+    <div class="status" id="statusPanel">
+      <p>📡 ESTADO DEL JUEGO:</p>
+      <div id="gameStatus" class="waiting">🟡 ESPERANDO SEÑAL</div>
+      <p style="font-size: 0.75rem; margin-top: 12px;">⚠️ Si el juego está bloqueado, presiona el botón de abajo</p>
+    </div>
+    
+    <div class="button-group">
+      <button id="sendResetBtn" class="reset-btn">🍌 ENVIAR SEÑAL RESET</button>
+      <button id="checkStatusBtn" class="check-btn">🔍 VERIFICAR ESTADO</button>
+    </div>
+    
+    <div class="signal-badge">
+      <p>📡 SEÑAL QUE SE ENVÍA:</p>
+      <div class="signal-value"><code id="signalValue">"reset"</code></div>
+      <p style="margin-top: 8px;">🔄 El juego se desbloqueará automáticamente al recibir esta señal</p>
+      <p style="margin-top: 5px; font-size: 0.7rem;">💡 La señal se guarda en localStorage y el juego la detecta cada 2 segundos</p>
+    </div>
+    
+    <hr>
+    
+    <div style="margin-top: 15px;">
+      <p style="color: #FFAA44; font-size: 0.8rem;">📖 INSTRUCCIONES:</p>
+      <p style="font-size: 0.75rem; color: #aaa;">1. Si el juego se bloquea, abre esta página</p>
+      <p style="font-size: 0.75rem; color: #aaa;">2. Presiona "ENVIAR SEÑAL RESET" o haz clic en la banana 🍌</p>
+      <p style="font-size: 0.75rem; color: #aaa;">3. Vuelve al juego y se desbloqueará automáticamente</p>
+    </div>
+    
+    <footer>
+      CC0 Raphapro900 - V1.0<br>
+      Panel de control - Ms. BananaS
+    </footer>
+  </div>
+
+  <div id="toastMessage" style="position: fixed; bottom: 20px; right: 20px; z-index: 1000;"></div>
+
+  <script>
+    // ==================== SISTEMA DE SEÑAL ====================
+    const SIGNAL = "reset";
+    const STORAGE_KEY = "resetSignal";
+    const GAME_LOCK_KEY = "gameLocked_V5";
+    
+    // Mostrar mensaje flotante
+    function showMessage(text, isError = false) {
+      const toast = document.getElementById('toastMessage');
+      const messageDiv = document.createElement('div');
+      messageDiv.className = isError ? 'error-message' : 'success-message';
+      messageDiv.textContent = text;
+      messageDiv.style.marginTop = '10px';
+      toast.appendChild(messageDiv);
+      setTimeout(() => {
+        messageDiv.remove();
+      }, 3000);
+    }
+    
+    // Enviar señal de reset
+    function sendResetSignal() {
+      try {
+        localStorage.setItem(STORAGE_KEY, SIGNAL);
+        localStorage.setItem("resetSignal_timestamp", Date.now());
+        console.log("✅ Señal RESET enviada a localStorage:", SIGNAL);
+        
+        // Actualizar UI
+        const statusDiv = document.getElementById('gameStatus');
+        statusDiv.innerHTML = '✅ SEÑAL ENVIADA ✅';
+        statusDiv.className = 'unlocked';
+        
+        // Cambiar texto del botón temporalmente
+        const btn = document.getElementById('sendResetBtn');
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '✅ ¡SEÑAL ENVIADA! ✅';
+        btn.style.background = '#00aa44';
+        btn.style.borderColor = '#00ff00';
+        
+        showMessage('✅ Señal RESET enviada correctamente. El juego se desbloqueará en segundos.', false);
+        
         setTimeout(() => {
-          window.location.reload();
-        }, 1000);
-        return true;
+          btn.innerHTML = originalText;
+          btn.style.background = '#ff3300';
+          btn.style.borderColor = '#ffaa00';
+          statusDiv.innerHTML = '🟢 SEÑAL ACTIVA';
+          statusDiv.className = 'unlocked';
+        }, 3000);
+        
+        // También verificar el estado del juego si es posible
+        checkGameStatus();
+        
+      } catch (error) {
+        console.error("Error al enviar señal:", error);
+        showMessage('❌ Error al enviar la señal. Reintenta.', true);
       }
-      return false;
     }
     
-    // Probar inmediatamente
-    checkLocalStorageSignal();
+    // Verificar el estado actual del juego
+    function checkGameStatus() {
+      try {
+        const gameLocked = localStorage.getItem(GAME_LOCK_KEY);
+        const resetSignal = localStorage.getItem(STORAGE_KEY);
+        
+        const statusDiv = document.getElementById('gameStatus');
+        
+        if (gameLocked === "true") {
+          statusDiv.innerHTML = '🔒 JUEGO BLOQUEADO';
+          statusDiv.className = 'locked';
+          showMessage('🔒 El juego está bloqueado. Presiona "ENVIAR SEÑAL RESET" para desbloquear.', false);
+        } else if (resetSignal === "reset") {
+          statusDiv.innerHTML = '🟢 SEÑAL PENDIENTE - ESPERANDO LECTURA';
+          statusDiv.className = 'unlocked';
+          showMessage('🟢 La señal de reset está activa. El juego se desbloqueará al recargar.', false);
+        } else {
+          statusDiv.innerHTML = '🟢 JUEGO DESBLOQUEADO';
+          statusDiv.className = 'unlocked';
+          showMessage('✅ El juego ya está desbloqueado. Puedes jugar normalmente.', false);
+        }
+        
+        // Mostrar información en consola
+        console.log("📊 Estado del juego:");
+        console.log("  - gameLocked_V5:", gameLocked);
+        console.log("  - resetSignal:", resetSignal);
+        
+      } catch (error) {
+        console.error("Error al verificar estado:", error);
+      }
+    }
     
-    // Luego cada 2 segundos (más rápido)
-    pollInterval = setInterval(checkLocalStorageSignal, 2000);
-  }
-  
-  // ... resto del juego igual ...
-</script>
+    // Limpiar señal (opcional - para debugging)
+    function clearSignal() {
+      localStorage.removeItem(STORAGE_KEY);
+      console.log("🧹 Señal limpiada");
+      showMessage('🧹 Señal de reset limpiada', false);
+      checkGameStatus();
+    }
+    
+    // Eventos
+    document.getElementById('sendResetBtn').addEventListener('click', sendResetSignal);
+    document.getElementById('checkStatusBtn').addEventListener('click', checkGameStatus);
+    document.getElementById('bananaIcon').addEventListener('click', sendResetSignal);
+    
+    // Click derecho opcional (debug)
+    document.addEventListener('contextmenu', (e) => {
+      if (e.target === document.getElementById('bananaIcon')) {
+        e.preventDefault();
+        clearSignal();
+      }
+    });
+    
+    // Mostrar la señal actual en la UI
+    document.getElementById('signalValue').innerText = SIGNAL;
+    
+    // Verificar estado al cargar la página
+    setTimeout(checkGameStatus, 500);
+    
+    console.log("🟢 Panel de reset listo");
+    console.log("📡 Señal que se envía: " + SIGNAL);
+    console.log("💾 La señal se guarda en localStorage con clave: " + STORAGE_KEY);
+  </script>
+</body>
+</html>
