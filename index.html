@@ -3,15 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>VHS SYSTEM - Ms.BananaS</title>
-    <!-- Importamos la tipografía VCR OSD Mono (estilo cinta VHS) -->
+    <title>VHS MONITOR - Ms.BananaS Resurrection</title>
     <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            user-select: none; /* efecto vintage, evita selecciones modernas */
+            user-select: none;
         }
 
         body {
@@ -26,7 +25,6 @@
             padding: 20px;
         }
 
-        /* Efecto VHS: líneas de interferencia y estática */
         .vhs-overlay {
             position: fixed;
             top: 0;
@@ -36,13 +34,7 @@
             pointer-events: none;
             z-index: 10;
             opacity: 0.25;
-            background: repeating-linear-gradient(
-                0deg,
-                rgba(0, 255, 0, 0.08) 0px,
-                rgba(0, 255, 0, 0.08) 2px,
-                transparent 2px,
-                transparent 6px
-            );
+            background: repeating-linear-gradient(0deg, rgba(0, 255, 0, 0.08) 0px, rgba(0, 255, 0, 0.08) 2px, transparent 2px, transparent 6px);
             animation: vhs-scan 8s linear infinite;
         }
 
@@ -52,7 +44,6 @@
             100% { transform: translateY(0); opacity: 0.2; }
         }
 
-        /* Glitch / efecto de cinta inestable (borrosidad aleatoria) */
         .vhs-glitch {
             position: fixed;
             top: 0;
@@ -73,22 +64,19 @@
             100% { opacity: 0.12; background: radial-gradient(circle at 90% 85%, rgba(0,255,0,0.1) 2%, transparent 3%);}
         }
 
-        /* Contenedor principal estilo monitor retro */
         .vhs-container {
             background-color: #000000dd;
             border: 4px solid #0f0;
             box-shadow: 0 0 20px #0f0, inset 0 0 15px #0f0;
             backdrop-filter: blur(1px);
-            padding: 2rem 2rem 2rem 2rem;
-            max-width: 750px;
+            padding: 2rem;
+            max-width: 800px;
             width: 100%;
             border-radius: 12px;
             position: relative;
             z-index: 20;
-            transition: all 0.2s;
         }
 
-        /* Efecto de curvatura tipo TV */
         .vhs-container::before {
             content: "";
             position: absolute;
@@ -101,22 +89,24 @@
             pointer-events: none;
         }
 
-        /* Texto principal "Reset" */
         .reset-title {
             text-align: center;
-            font-size: 4.5rem;
+            font-size: 4rem;
             letter-spacing: 6px;
             color: #0f0;
-            text-shadow: 0 0 8px #0f0, 0 0 2px #0f0;
-            margin-bottom: 2rem;
-            font-weight: normal;
-            word-break: keep-all;
+            text-shadow: 0 0 8px #0f0;
+            margin-bottom: 1.5rem;
             animation: flicker 3s infinite;
             text-transform: uppercase;
-            font-family: 'Share Tech Mono', monospace;
         }
 
-        /* Subtítulo / caja de mensajes */
+        @keyframes flicker {
+            0%, 100% { text-shadow: 0 0 5px #0f0; opacity: 1; }
+            10% { text-shadow: 0 0 15px #0f0; opacity: 0.9; }
+            20% { text-shadow: 0 0 2px #0f0; opacity: 0.85; }
+            50% { text-shadow: 0 0 8px #0f0; opacity: 1; }
+        }
+
         .zone-text {
             background: #031003;
             border-left: 6px solid #0f0;
@@ -124,12 +114,11 @@
             margin: 1.5rem 0;
             font-family: 'Share Tech Mono', monospace;
             color: #0f0;
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             text-shadow: 0 0 2px #0f0;
             box-shadow: inset 0 0 10px rgba(0,255,0,0.2);
         }
 
-        /* Botón vintage */
         .vhs-button {
             background: black;
             border: 2px solid #0f0;
@@ -137,7 +126,6 @@
             font-family: 'Share Tech Mono', monospace;
             font-size: 1.8rem;
             padding: 0.8rem 1.8rem;
-            margin: 0.6rem;
             cursor: pointer;
             transition: all 0.1s ease;
             text-transform: uppercase;
@@ -149,94 +137,64 @@
         .vhs-button:hover {
             background: #0f0;
             color: black;
-            box-shadow: 0 0 15px #0f0;
-            text-shadow: none;
             transform: scale(0.98);
         }
 
-        .vhs-button:active {
-            transform: scale(0.96);
-        }
-
-        /* Dialogo de confirmación estilo terminal */
         .confirm-dialog {
             background: #021002;
             border: 2px solid #0f0;
             padding: 1.5rem;
             margin-top: 1.8rem;
             text-align: center;
-            box-shadow: 0 0 15px rgba(0, 255, 0, 0.3);
-            backdrop-filter: blur(2px);
         }
 
         .dialog-text {
-            font-size: 1.3rem;
-            margin-bottom: 1.2rem;
-            word-break: break-word;
-            line-height: 1.4;
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
             color: #0f0;
         }
 
-        .dialog-buttons {
-            display: flex;
-            justify-content: center;
-            gap: 25px;
-            flex-wrap: wrap;
-        }
-
         .small-btn {
-            font-size: 1.3rem;
+            font-size: 1.2rem;
             padding: 0.5rem 1.4rem;
             background: #021002;
             border: 1.5px solid #0f0;
             color: #0f0;
-            font-family: monospace;
-            font-weight: bold;
             cursor: pointer;
-            transition: 0.05s linear;
+            margin: 0 10px;
         }
 
         .small-btn:hover {
             background: #0f0;
             color: black;
-            box-shadow: 0 0 10px #0f0;
         }
 
-        /* mensaje de estado o bloqueo */
         .lock-message {
             margin-top: 20px;
-            font-size: 1rem;
+            font-size: 0.9rem;
             text-align: center;
             padding: 6px;
             border-top: 1px dashed #0f0;
         }
 
         .blink {
-            animation: blink-anim 1.2s step-end infinite;
+            animation: blink-anim 1s step-end infinite;
         }
 
         @keyframes blink-anim {
-            0%, 100% { opacity: 1; }
             50% { opacity: 0.3; }
         }
 
-        /* flicker adicional en el reset */
-        @keyframes flicker {
-            0% { text-shadow: 0 0 5px #0f0; opacity: 1; }
-            5% { text-shadow: 0 0 12px #0f0, 0 0 20px #0f0; opacity: 0.9; }
-            10% { text-shadow: 0 0 3px #0f0; opacity: 0.95; }
-            15% { text-shadow: 0 0 8px #0f0; opacity: 1; }
-            20% { text-shadow: 0 0 0px #0f0; opacity: 0.85; }
-            25% { text-shadow: 0 0 7px #0f0; opacity: 1; }
-            100% { text-shadow: 0 0 5px #0f0; opacity: 1; }
-        }
-
-        /* para el estado de "Pantalla Bloqueo" */
         .warning {
             color: #0f0;
             background: #030f03;
-            display: inline-block;
             padding: 0 8px;
+        }
+
+        .status-dead {
+            color: #ff4444;
+            text-shadow: 0 0 4px red;
+            font-weight: bold;
         }
 
         footer {
@@ -246,12 +204,15 @@
             opacity: 0.7;
             color: #0f0;
         }
-
-        @media (max-width: 550px) {
-            .vhs-container { padding: 1.2rem; }
-            .reset-title { font-size: 2.5rem; }
-            .vhs-button { font-size: 1.2rem; padding: 0.5rem 1rem; }
-            .dialog-text { font-size: 1rem; }
+        .small-demo-btn {
+            background: transparent;
+            border: 1px solid #0f0;
+            color: #0f0;
+            padding: 4px 12px;
+            font-family: monospace;
+            font-size: 0.75rem;
+            cursor: pointer;
+            margin-top: 10px;
         }
     </style>
 </head>
@@ -261,279 +222,234 @@
 <div class="vhs-glitch"></div>
 
 <div class="vhs-container">
-    <!-- Texto principal "Reset" según requisito: un texto arriba que dice "Reset" -->
     <div class="reset-title">Reset</div>
 
-    <!-- Zona de contenido dinámico: Panel principal -->
     <div class="zone-text" id="infoZone">
-        ⚡ SYSTEM VHS ][  Ms.BananaS interface ⚡<br>
-        ▶ Estado: <span id="lockStateLabel">ACTIVO · SIN BLOQUEO</span>
+        ⚡ SYSTEM VHS [MONITOR DE RESURRECCIÓN] ⚡<br>
+        ▶ Estado del Juego: <span id="gameStatusLabel">🟢 SIN BLOQUEO / OK</span><br>
+        ▶ Monitor Activo: <span id="monitorStatus">ESCUCHANDO SEÑAL...</span>
     </div>
 
-    <!-- Botón principal "Ms.BananaS." -->
     <div style="text-align: center;">
         <button class="vhs-button" id="mainBananaBtn">Ms.BananaS.</button>
     </div>
 
-    <!-- Aquí se renderizará dinámicamente el cuadro de confirmación (Are you sure...? con opción Si/No) -->
     <div id="confirmDialogContainer" style="min-height: 170px;"></div>
 
-    <!-- Pequeño mensaje inferior para indicar Pantalla Bloqueo y efecto de quitar bloqueo -->
     <div class="lock-message" id="lockMessageDisplay">
         📼 [ SISTEMA ] Pantalla Bloqueo: <span id="blockScreenIndicator" class="warning blink">DESBLOQUEADO</span>
     </div>
-    <footer>VCR OSD MODE // INSERT TAPE // Ms.BananaS v1.0</footer>
+    <footer>VCR OSD // DETECCIÓN AUTOMÁTICA DE MUERTE // RESET NECESARIO</footer>
+    <div style="text-align:center; margin-top:12px;">
+        <button id="forceKillBtn" class="small-demo-btn">💀 SIMULAR QUE MATARON A Ms.BananaS (demo)</button>
+    </div>
 </div>
 
 <script>
-    // --------------------------------------------------------------
-    // SIMULACIÓN DE ESTADO DE "Pantalla Bloqueo"
-    // Variables de estado (control interno para reflejar bloqueo)
-    let pantallaBloqueada = false;   // false: sin bloqueo, true: bloqueado.
-    // La URL real que debe recibir la señal de reseteo
+    // === ESTADOS REALES ===
+    let pantallaBloqueada = false;      // Bloqueo interno: necesita reinicio
+    let gameOverDetected = false;       // Flag para saber si el juego fue matado
+    let monitorInterval = null;          // Intervalo de monitoreo
     const RESET_URL = 'https://raphapro900.github.io/Ms.BananaS/';
-    
-    // Elementos del DOM
-    const lockStateSpan = document.getElementById('lockStateLabel');
-    const blockScreenIndicator = document.getElementById('blockScreenIndicator');
+
+    // Elementos DOM
+    const gameStatusLabel = document.getElementById('gameStatusLabel');
+    const monitorStatusSpan = document.getElementById('monitorStatus');
+    const lockStateSpan = document.getElementById('blockScreenIndicator');
     const confirmContainer = document.getElementById('confirmDialogContainer');
     const mainBtn = document.getElementById('mainBananaBtn');
+    const lockMsgDiv = document.getElementById('lockMessageDisplay');
 
-    // Función para actualizar la UI referente al bloqueo
-    function actualizarUI_bloqueo() {
+    // === FUNCIÓN PARA ACTUALIZAR UI SEGÚN BLOQUEO ===
+    function actualizarUI() {
+        const infoZoneDiv = document.getElementById('infoZone');
         if (pantallaBloqueada) {
-            lockStateSpan.innerHTML = '🔒 BLOQUEADO · Pantalla Bloqueo activa';
-            blockScreenIndicator.innerHTML = 'BLOQUEADO';
-            blockScreenIndicator.style.animation = 'blink-anim 0.8s step-end infinite';
-            // Cambiar texto de infoZone adicionalmente
-            const infoZoneDiv = document.getElementById('infoZone');
-            if (infoZoneDiv && !infoZoneDiv.innerHTML.includes('BLOQUEO ACTIVO')) {
-                // añade aviso sin romper el contenido
-                if(!infoZoneDiv.innerHTML.includes('⚠️ BLOQUEO')) {
-                    infoZoneDiv.innerHTML = '⚡ SYSTEM VHS ][  Ms.BananaS interface ⚡<br>▶ Estado: <span id="lockStateLabel">🔒 BLOQUEADO · Pantalla Bloqueo activa</span><br><span style="font-size:0.85rem;">⚠️ ACCIÓN REQUERIDA: Reiniciar vía Ms.BananaS</span>';
-                    // Reemplazar el span interno porque fue reescrito, reassignar referencia:
-                    const newLockSpan = document.getElementById('lockStateLabel');
-                    if(newLockSpan) {
-                        // ya actualizado
-                    }
-                }
+            lockStateSpan.innerHTML = 'BLOQUEADO 🔒';
+            lockStateSpan.style.animation = 'blink-anim 1s step-end infinite';
+            gameStatusLabel.innerHTML = '🔴 BLOQUEADO · NECESITA REINICIO 🔴';
+            gameStatusLabel.classList.add('status-dead');
+            if (infoZoneDiv && !infoZoneDiv.innerHTML.includes("REQUIERE REINICIO")) {
+                infoZoneDiv.innerHTML = '⚠️ SYSTEM VHS [ALERTA] ⚠️<br>▶ Estado del Juego: <span id="gameStatusLabel">🔴 BLOQUEADO · NECESITA REINICIO 🔴</span><br>▶ Ms.BananaS ha sido derrotada. Presiona "Ms.BananaS." y confirma REINICIO.';
             }
         } else {
-            lockStateSpan.innerHTML = '🟢 DESBLOQUEADO · Sistema OK';
-            blockScreenIndicator.innerHTML = 'DESBLOQUEADO';
-            blockScreenIndicator.style.animation = 'none';
-            const infoZoneDiv = document.getElementById('infoZone');
-            if (infoZoneDiv && !infoZoneDiv.innerHTML.includes('DESBLOQUEADO')) {
-                infoZoneDiv.innerHTML = '⚡ SYSTEM VHS ][  Ms.BananaS interface ⚡<br>▶ Estado: <span id="lockStateLabel">🟢 DESBLOQUEADO · Sistema OK</span>';
+            lockStateSpan.innerHTML = 'DESBLOQUEADO';
+            lockStateSpan.style.animation = 'none';
+            gameStatusLabel.innerHTML = '🟢 ACTIVO · SIN BLOQUEO 🟢';
+            gameStatusLabel.classList.remove('status-dead');
+            if (infoZoneDiv && !infoZoneDiv.innerHTML.includes("SIN BLOQUEO")) {
+                infoZoneDiv.innerHTML = '⚡ SYSTEM VHS [MONITOR DE RESURRECCIÓN] ⚡<br>▶ Estado del Juego: <span id="gameStatusLabel">🟢 ACTIVO · SIN BLOQUEO 🟢</span><br>▶ Monitor Activo: <span id="monitorStatus">ESCUCHANDO SEÑAL...</span>';
             }
         }
-        // Corregir la referencia lockStateSpan después de reescribir innerHTML (por si acaso)
-        const freshLockSpan = document.getElementById('lockStateLabel');
-        if (freshLockSpan && pantallaBloqueada) freshLockSpan.innerHTML = '🔒 BLOQUEADO · Pantalla Bloqueo activa';
-        if (freshLockSpan && !pantallaBloqueada) freshLockSpan.innerHTML = '🟢 DESBLOQUEADO · Sistema OK';
+        // Aseguramos que el span de estado dentro del texto dinámico también se actualice si fue reescrito
+        const dynamicGameLabel = document.getElementById('gameStatusLabel');
+        if (dynamicGameLabel) {
+            if (pantallaBloqueada) dynamicGameLabel.innerHTML = '🔴 BLOQUEADO · NECESITA REINICIO 🔴';
+            else dynamicGameLabel.innerHTML = '🟢 ACTIVO · SIN BLOQUEO 🟢';
+        }
     }
 
-    // Función que limpia/remueve el diálogo de confirmación
+    // === DETECTAR SI EL JUEGO ESTÁ "MUERTO/BLOQUEADO" BASADO EN EL CONTENIDO REAL DE LA URL ===
+    // El HTML real contiene: "GAME NOT FOUND", "bloqueado", "Esperando señal de reseteo"
+    function analizarEstadoJuego(htmlTexto) {
+        const lowerContent = htmlTexto.toLowerCase();
+        if (lowerContent.includes('game not found') || 
+            lowerContent.includes('bloqueado') || 
+            lowerContent.includes('esperando señal de reseteo') ||
+            lowerContent.includes('reset') && lowerContent.includes('señal')) {
+            return true; // Game over / bloqueado
+        }
+        return false;
+    }
+
+    // === MONITOREO PERIÓDICO DEL ESTADO DE https://raphapro900.github.io/Ms.BananaS/ ===
+    function iniciarMonitoreo() {
+        if (monitorInterval) clearInterval(monitorInterval);
+        
+        monitorInterval = setInterval(() => {
+            // Solo monitoreamos si el juego está "desbloqueado" en nuestro sistema o si queremos detectar cuando lo matan.
+            // Pero el flujo correcto: después de reiniciar, empezamos a escuchar si el juego vuelve a caer.
+            // Incluso si pantallaBloqueada = true, podemos monitorear para detectar si alguien lo reseteó externamente? Pero mejor solo cuando está desbloqueado.
+            // Para cumplir con "cuando detecte que en Ms.BananaS lo mataron que se ponga como si necesita otravez reiniciar"
+            fetch(RESET_URL, {
+                method: 'GET',
+                cache: 'no-store',
+                headers: { 'Cache-Control': 'no-cache' }
+            })
+            .then(response => response.text())
+            .then(html => {
+                const juegoBloqueado = analizarEstadoJuego(html);
+                monitorStatusSpan.innerHTML = `🔄 Última revisión: ${new Date().toLocaleTimeString()} | Estado remoto: ${juegoBloqueado ? 'BLOQUEADO/MUERTO' : 'ACTIVO'}`;
+                
+                // Si el juego remoto está bloqueado/muerto Y nuestro sistema actual NO está bloqueado (pantallaBloqueada = false)
+                // -> significa que acaban de matarlo, debemos activar automáticamente el "necesita reinicio"
+                if (juegoBloqueado && !pantallaBloqueada) {
+                    console.log("⚠️ ¡DETECTADO! Ms.BananaS fue derrotado/encontrado bloqueado. Activando necesidad de reinicio.");
+                    pantallaBloqueada = true;
+                    actualizarUI();
+                    if (lockMsgDiv) {
+                        lockMsgDiv.innerHTML = '💀 [ALERTA VHS] 💀 ¡HAN MATADO A Ms.BananaS! REQUIERE REINICIO. Presione el botón.';
+                        setTimeout(() => {
+                            if (lockMsgDiv) lockMsgDiv.innerHTML = '📼 [ SISTEMA ] Pantalla Bloqueo: <span id="blockScreenIndicator" class="warning blink">BLOQUEADO</span>';
+                        }, 3000);
+                    }
+                    // Opcional: limpiar diálogos para evitar confusiones
+                    limpiarDialogo();
+                } 
+                // Si el juego remoto está ACTIVO y nuestro sistema está bloqueado, podría significar que alguien lo desbloqueó externamente? 
+                // Pero mantenemos la lógica: solo se desbloquea mediante el botón de reinicio. No lo cambiamos automáticamente.
+                else if (!juegoBloqueado && pantallaBloqueada) {
+                    // Mostramos mensaje de que el juego fue reseteado externamente, pero mantenemos bloqueo hasta que usuario haga clic?
+                    // No, mejor no cambiar estado para evitar ciclos raros. El usuario debe usar el botón.
+                    monitorStatusSpan.innerHTML += " | (Juego activo externamente, pero sistema espera confirmación)";
+                }
+            })
+            .catch(error => {
+                console.warn("Error en monitoreo:", error);
+                monitorStatusSpan.innerHTML = `⚠️ ERROR conectando a ${RESET_URL}. Reintentando...`;
+            });
+        }, 4000); // cada 4 segundos
+    }
+
+    // === FUNCIÓN DE REINICIO (envía HTTP real y DESBLOQUEA el sistema) ===
+    function enviarReseteoYDesbloquear() {
+        // Enviar señal HTTP real
+        fetch(RESET_URL, { method: 'GET', cache: 'no-cache', mode: 'cors' })
+            .then(res => {
+                console.log("HTTP Reset enviado. Status:", res.status);
+                monitorStatusSpan.innerHTML = `✅ SEÑAL DE RESET ENVIADA (${res.status}) a ${RESET_URL}`;
+            })
+            .catch(err => {
+                console.warn("Error en fetch, pero señal enviada en modo no-cors:", err);
+                monitorStatusSpan.innerHTML = `⚠️ Señal de reset emitida (CORS bloqueado pero intentado).`;
+            });
+
+        // Desbloquear nuestro sistema SI estaba bloqueado
+        if (pantallaBloqueada) {
+            pantallaBloqueada = false;
+            actualizarUI();
+            if (lockMsgDiv) {
+                lockMsgDiv.innerHTML = '🔄 REINICIO EFECTUADO. Superficie desbloqueada. Esperando nuevo Game Over...';
+                setTimeout(() => {
+                    if (lockMsgDiv && !pantallaBloqueada) lockMsgDiv.innerHTML = '📼 [ SISTEMA ] Pantalla Bloqueo: <span id="blockScreenIndicator" class="warning">DESBLOQUEADO</span>';
+                }, 2500);
+            }
+        } else {
+            // Reinicio preventivo aunque no estuviera bloqueado
+            if (lockMsgDiv) lockMsgDiv.innerHTML = '🟢 Reset enviado. Monitoreando posible muerte...';
+            setTimeout(() => {
+                if (lockMsgDiv && !pantallaBloqueada) lockMsgDiv.innerHTML = '📼 [ SISTEMA ] Pantalla Bloqueo: <span id="blockScreenIndicator" class="warning">DESBLOQUEADO</span>';
+            }, 2000);
+        }
+        limpiarDialogo();
+    }
+
+    // === DIÁLOGO DE CONFIRMACIÓN ===
     function limpiarDialogo() {
         confirmContainer.innerHTML = '';
     }
 
-    // Función que quita pantalla bloqueo (desbloquear) y muestra mensaje
-    function quitarPantallaBloqueo() {
-        if (pantallaBloqueada) {
-            pantallaBloqueada = false;
-            actualizarUI_bloqueo();
-            // Mostramos mensaje efímero en el lock-message
-            const lockMsgDiv = document.getElementById('lockMessageDisplay');
-            if (lockMsgDiv) {
-                lockMsgDiv.innerHTML = '📼 [ SISTEMA ] ✅ Pantalla Bloqueo ha sido REMOVIDA. ✅';
-                setTimeout(() => {
-                    if (document.getElementById('lockMessageDisplay')) {
-                        document.getElementById('lockMessageDisplay').innerHTML = '📼 [ SISTEMA ] Pantalla Bloqueo: <span id="blockScreenIndicator" class="warning">DESBLOQUEADO</span>';
-                        // volver a asociar el span
-                        const newIndicator = document.getElementById('blockScreenIndicator');
-                        if(newIndicator && pantallaBloqueada) newIndicator.innerHTML='BLOQUEADO';
-                        if(newIndicator && !pantallaBloqueada) newIndicator.innerHTML='DESBLOQUEADO';
-                    }
-                }, 2200);
-            }
-        } else {
-            // Si no estaba bloqueado, igualmente mostramos que no hay bloqueo
-            const lockMsgDiv = document.getElementById('lockMessageDisplay');
-            if (lockMsgDiv) {
-                lockMsgDiv.innerHTML = '📼 [ SISTEMA ] ⚡ Sin bloqueo activo. ⚡';
-                setTimeout(() => {
-                    if(document.getElementById('lockMessageDisplay'))
-                        document.getElementById('lockMessageDisplay').innerHTML = '📼 [ SISTEMA ] Pantalla Bloqueo: <span id="blockScreenIndicator" class="warning">DESBLOQUEADO</span>';
-                }, 1500);
-            }
-        }
-        actualizarUI_bloqueo();
-    }
-
-    // Función para enviar el HTTP REAL a la URL y quitar pantalla bloqueo
-    function enviarHttpYQuitarBloqueo() {
-        // Realizar petición HTTP real a la URL especificada (método GET)
-        // Usamos fetch con modo 'cors' (por defecto) para intentar la conexión real.
-        // Dado que el servidor puede no tener CORS configurado, es posible que la consola muestre un error,
-        // pero la petición se envía de todas formas. Para maximizar compatibilidad, agregamos manejo de errores silencioso.
-        fetch(RESET_URL, {
-            method: 'GET',
-            cache: 'no-cache',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-                'X-Requested-With': 'XMLHttpRequest' // Cabecera amigable para algunos servidores
-            }
-        })
-        .then(response => {
-            console.log("✅ HTTP enviado exitosamente a", RESET_URL, "Status:", response.status);
-            // Podemos mostrar un mensaje adicional en la zona de info
-            const infoDiv = document.getElementById('infoZone');
-            if (infoDiv) {
-                const originalText = infoDiv.innerHTML;
-                infoDiv.innerHTML = `⚡ SEÑAL DE RESET ENVIADA a Ms.BananaS (Status ${response.status}) ⚡`;
-                setTimeout(() => {
-                    if(pantallaBloqueada) actualizarUI_bloqueo();
-                    else if (infoDiv && !pantallaBloqueada) {
-                        infoDiv.innerHTML = '⚡ SYSTEM VHS ][  Ms.BananaS interface ⚡<br>▶ Estado: <span id="lockStateLabel">🟢 DESBLOQUEADO · Sistema OK</span>';
-                    }
-                }, 2000);
-            }
-        })
-        .catch(error => {
-            console.warn("⚠️ No se pudo completar el fetch (CORS o red), pero la señal se intentó enviar:", error);
-            const infoDiv = document.getElementById('infoZone');
-            if (infoDiv) {
-                infoDiv.innerHTML = `⚠️ SEÑAL DE RESET ENVIADA (modo no-cors) a ${RESET_URL} ⚠️`;
-                setTimeout(() => {
-                    if(pantallaBloqueada) actualizarUI_bloqueo();
-                    else if (infoDiv && !pantallaBloqueada) {
-                        infoDiv.innerHTML = '⚡ SYSTEM VHS ][  Ms.BananaS interface ⚡<br>▶ Estado: <span id="lockStateLabel">🟢 DESBLOQUEADO · Sistema OK</span>';
-                    }
-                }, 2000);
-            }
-        });
-        
-        // Quitar pantalla bloqueo después de enviar la señal (independientemente del éxito del fetch)
-        quitarPantallaBloqueo();
-
-        // limpiar cualquier diálogo pendiente
-        limpiarDialogo();
-    }
-
-    // Mostrar el diálogo de confirmación cuando se pulsa Ms.BananaS.
     function mostrarConfirmacion() {
-        // Limpiar cualquier diálogo previo
         limpiarDialogo();
-        // Crear estructura del diálogo
         const dialogDiv = document.createElement('div');
         dialogDiv.className = 'confirm-dialog';
         dialogDiv.innerHTML = `
             <div class="dialog-text">
-                ⚠️ Are you sure you want to restart (Opción)? ⚠️<br>
-                Se enviará señal HTTP REAL a Ms.BananaS.<br>
-                <span style="font-size:0.9rem;">(Se quitará Pantalla Bloqueo si está activa)</span>
+                ⚠️ Are you sure you want to restart Ms.BananaS? ⚠️<br>
+                Se enviará señal de RESETEO REAL al juego.<br>
+                <span style="font-size:0.85rem;">(Esto quitará Pantalla Bloqueo y reactivará el monitoreo de muerte)</span>
             </div>
             <div class="dialog-buttons">
-                <button class="small-btn" id="confirmYesBtn">🟢 SÍ, reiniciar</button>
+                <button class="small-btn" id="confirmYesBtn">🟢 SÍ, reiniciar ahora</button>
                 <button class="small-btn" id="confirmNoBtn">🔴 NO, cancelar</button>
             </div>
         `;
         confirmContainer.appendChild(dialogDiv);
-
-        // event listeners
-        const yesBtn = document.getElementById('confirmYesBtn');
-        const noBtn = document.getElementById('confirmNoBtn');
-        if (yesBtn) {
-            yesBtn.addEventListener('click', () => {
-                // El usuario confirmó SÍ.
-                enviarHttpYQuitarBloqueo();
-                // adicional, limpiar diálogo
-                limpiarDialogo();
-            });
-        }
-        if (noBtn) {
-            noBtn.addEventListener('click', () => {
-                // cancelar: solo cierra diálogo y muestra mensaje
-                limpiarDialogo();
-                const zone = document.getElementById('infoZone');
-                if (zone) {
-                    const prevHtml = zone.innerHTML;
-                    zone.innerHTML = '⛔ Reinicio cancelado. Sin cambios.';
-                    setTimeout(() => {
-                        if (pantallaBloqueada) actualizarUI_bloqueo();
-                        else if (zone && !pantallaBloqueada) {
-                            zone.innerHTML = '⚡ SYSTEM VHS ][  Ms.BananaS interface ⚡<br>▶ Estado: <span id="lockStateLabel">🟢 DESBLOQUEADO · Sistema OK</span>';
-                        } else if(pantallaBloqueada) actualizarUI_bloqueo();
-                    }, 1200);
-                }
-            });
-        }
+        
+        document.getElementById('confirmYesBtn')?.addEventListener('click', () => {
+            enviarReseteoYDesbloquear();
+        });
+        document.getElementById('confirmNoBtn')?.addEventListener('click', () => {
+            limpiarDialogo();
+            const zone = document.getElementById('infoZone');
+            if(zone) zone.innerHTML = '⛔ Reinicio cancelado. El juego sigue en su estado actual.';
+            setTimeout(() => actualizarUI(), 1500);
+        });
     }
 
-    // BOTÓN PRINCIPAL Ms.BananaS lanza confirmación
+    // === EVENTO PRINCIPAL ===
     mainBtn.addEventListener('click', () => {
         mostrarConfirmacion();
     });
 
-    // ------------------------ SIMULADOR DE PANTALLA BLOQUEO (para demostrar que se quite) -----------------
-    // Crear un pequeño botón no intrusivo para activar el bloqueo de pantalla y mostrar la funcionalidad 
-    // tal como el enunciado sugiere "que pueda quitar pantalla bloqueo" necesitamos un estado bloqueado. 
-    // Añadimos un botón adicional pero con estilo secundario y pequeño dentro del lock-message? 
-    // Para mantener la pureza, podemos añadirlo debajo del footer o en la zona de mensaje pero sin romper diseño.
-    // Creamos un botón elegante, estilo terminal, texto "🔒 SIMULAR BLOQUEO" que pondrá pantalla_bloqueada = true.
-    // Esto cumple con que el usuario pueda probar que al presionar Ms.BananaS -> SÍ se envíe HTTP y quite el bloqueo.
-    // Se hace de forma consistente y permite validar cada requisito.
-    const extraDiv = document.createElement('div');
-    extraDiv.style.marginTop = '15px';
-    extraDiv.style.textAlign = 'center';
-    extraDiv.style.borderTop = '1px dotted #0f0';
-    extraDiv.style.paddingTop = '12px';
-    extraDiv.innerHTML = `
-        <button id="simulateLockBtn" style="background:transparent; border:1px solid #0f0; color:#0f0; font-family:monospace; padding:6px 12px; font-size:0.8rem; cursor:pointer; letter-spacing:1px;">
-            ⚡ SIMULAR Pantalla Bloqueo (Demo) ⚡
-        </button>
-        <span style="margin-left:10px; font-size:0.7rem;">│ Activar bloqueo para probar "quitar"</span>
-    `;
-    document.querySelector('.vhs-container').appendChild(extraDiv);
-    
-    const simulateBtn = document.getElementById('simulateLockBtn');
-    if (simulateBtn) {
-        simulateBtn.addEventListener('click', () => {
-            if (!pantallaBloqueada) {
-                pantallaBloqueada = true;
-                actualizarUI_bloqueo();
-                // mostrar en confirmación
-                limpiarDialogo();
-                const infoDiv2 = document.getElementById('infoZone');
-                if(infoDiv2) infoDiv2.innerHTML = '⚡ SYSTEM VHS ][ BLOQUEO ACTIVADO ⚡<br>▶ Estado: <span id="lockStateLabel">🔒 BLOQUEADO · Pantalla Bloqueo activa</span><br><span style="font-size:0.8rem;">Usa "Ms.BananaS." y confirma SÍ para quitar bloqueo.</span>';
-                const lockMsg = document.getElementById('lockMessageDisplay');
-                if(lockMsg) lockMsg.innerHTML = '📼 [ SISTEMA ] Pantalla Bloqueo: <span id="blockScreenIndicator" class="warning blink">BLOQUEADO</span>';
-            } else {
-                // Ya bloqueado, mensaje de aviso
-                const tempMsg = document.getElementById('lockMessageDisplay');
-                if(tempMsg) {
-                    tempMsg.innerHTML = '⚠️ YA ESTÁ BLOQUEADA LA PANTALLA. Usa Ms.BananaS → SÍ para desbloquear.';
-                    setTimeout(() => {
-                        if(document.getElementById('lockMessageDisplay') && pantallaBloqueada)
-                            document.getElementById('lockMessageDisplay').innerHTML = '📼 [ SISTEMA ] Pantalla Bloqueo: <span id="blockScreenIndicator" class="warning blink">BLOQUEADO</span>';
-                        else if (!pantallaBloqueada && document.getElementById('lockMessageDisplay'))
-                            document.getElementById('lockMessageDisplay').innerHTML = '📼 [ SISTEMA ] Pantalla Bloqueo: <span id="blockScreenIndicator" class="warning">DESBLOQUEADO</span>';
-                    }, 1800);
-                }
+    // === SIMULADOR DE "MATARON A Ms.BananaS" PARA DEMO Y PRUEBA (sin esperar al servidor real, útil para test del ciclo) ===
+    // Esto fuerza la detección de muerte simulando que el juego fue bloqueado, para ver el comportamiento "necesita otravez reiniciar"
+    function simularMuerte() {
+        if (!pantallaBloqueada) {
+            pantallaBloqueada = true;
+            actualizarUI();
+            if (lockMsgDiv) {
+                lockMsgDiv.innerHTML = '💀 SIMULACIÓN: HAN MATADO A Ms.BANANAS. Sistema requiere REINICIO. 💀';
+                setTimeout(() => {
+                    if (lockMsgDiv && pantallaBloqueada) lockMsgDiv.innerHTML = '📼 [ SISTEMA ] Pantalla Bloqueo: <span id="blockScreenIndicator" class="warning blink">BLOQUEADO</span>';
+                }, 3500);
             }
-        });
+            limpiarDialogo();
+            monitorStatusSpan.innerHTML = "⚠️ [DEMO] Muerte forzada detectada. Presiona Ms.BananaS y reinicia.";
+        } else {
+            if (lockMsgDiv) lockMsgDiv.innerHTML = '⚠️ Ya está bloqueado. Usa Ms.BananaS para reiniciar.';
+            setTimeout(() => {
+                if (lockMsgDiv && pantallaBloqueada) lockMsgDiv.innerHTML = '📼 [ SISTEMA ] Pantalla Bloqueo: <span id="blockScreenIndicator" class="warning blink">BLOQUEADO</span>';
+            }, 2000);
+        }
     }
 
-    // Inicializar la UI correctamente (sin bloqueo por defecto)
-    pantallaBloqueada = false;
-    actualizarUI_bloqueo();
+    const forceKill = document.getElementById('forceKillBtn');
+    if (forceKill) forceKill.addEventListener('click', simularMuerte);
 
-    // Sincronizar la referencia de blockScreenIndicator luego de cambios eventuales
-    window.addEventListener('load', () => {
-        actualizarUI_bloqueo();
-        // agregar efecto de cinta extra
-    });
+    // === INICIAR TODO ===
+    pantallaBloqueada = false;
+    actualizarUI();
+    iniciarMonitoreo();
 </script>
 </body>
 </html>
