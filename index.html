@@ -1,1 +1,99 @@
-reset
+<!-- Este es el código COMPLETO del juego que DEBES usar -->
+<!-- (solo muestro la parte modificada del sistema de bloqueo) -->
+
+<script type="module">
+  // ==================== SISTEMA DE BLOQUEO MEJORADO ====================
+  const LOCK_STORAGE_KEY = "gameLocked_V4";
+  const RESET_SIGNAL_KEY = "resetSignal";  // ← CLAVE PARA LEER LA SEÑAL
+  
+  function setGameLocked() {
+    localStorage.setItem(LOCK_STORAGE_KEY, "true");
+    // Limpiar señal antigua al bloquear
+    localStorage.removeItem(RESET_SIGNAL_KEY);
+    console.log("🔒 Juego bloqueado");
+  }
+
+  function isGameLocked() {
+    return localStorage.getItem(LOCK_STORAGE_KEY) === "true";
+  }
+
+  function clearGameLocked() {
+    localStorage.removeItem(LOCK_STORAGE_KEY);
+    console.log("🔓 Juego desbloqueado");
+  }
+  
+  // Verificar si hay señal de reset pendiente
+  function checkForResetSignal() {
+    const signal = localStorage.getItem(RESET_SIGNAL_KEY);
+    if (signal === "reset") {
+      console.log("✅ SEÑAL DE RESET ENCONTRADA en localStorage");
+      localStorage.removeItem(RESET_SIGNAL_KEY); // Limpiar después de leer
+      clearGameLocked();
+      return true;
+    }
+    return false;
+  }
+
+  const lockScreen = document.getElementById('lockScreen');
+  const gameContent = document.getElementById('gameContent');
+  const menuMusic = document.getElementById('menuMusic');
+  const roomMusic = document.getElementById('roomMusic');
+  const resetSignalDiv = document.getElementById('resetSignal');
+
+  function stopAllGameMusic() {
+    if (menuMusic) { menuMusic.pause(); menuMusic.currentTime = 0; }
+    if (roomMusic) { roomMusic.pause(); roomMusic.currentTime = 0; }
+  }
+
+  // Verificar estado al cargar
+  if (isGameLocked()) {
+    // Primero verificar si hay señal de reset
+    if (checkForResetSignal()) {
+      // Hay señal, desbloquear y recargar
+      window.location.reload();
+    } else {
+      gameContent.style.display = 'none';
+      lockScreen.style.display = 'flex';
+      stopAllGameMusic();
+      startPollingForReset();  // Seguir polling por si acaso
+    }
+  } else {
+    gameContent.style.display = 'block';
+    lockScreen.style.display = 'none';
+    iniciarJuego();
+  }
+
+  // Polling al localStorage (más confiable que fetch)
+  function startPollingForReset() {
+    const resetSignalDiv = document.getElementById('resetSignal');
+    let pollInterval;
+    let attempts = 0;
+    
+    function checkLocalStorageSignal() {
+      attempts++;
+      resetSignalDiv.innerHTML = `🔄 Buscando señal de reset... (Intento ${attempts})<br>📡 Revisando en localStorage...`;
+      
+      const signal = localStorage.getItem(RESET_SIGNAL_KEY);
+      if (signal === "reset") {
+        resetSignalDiv.innerHTML = '✅ ¡SEÑAL DE RESET DETECTADA! Desbloqueando...';
+        console.log("✅ SEÑAL DE RESET RECIBIDA desde localStorage");
+        localStorage.removeItem(RESET_SIGNAL_KEY);
+        clearInterval(pollInterval);
+        clearGameLocked();
+        setTimeout(() => {
+          window.location.reload();
+        }, 1000);
+        return true;
+      }
+      return false;
+    }
+    
+    // Probar inmediatamente
+    checkLocalStorageSignal();
+    
+    // Luego cada 2 segundos (más rápido)
+    pollInterval = setInterval(checkLocalStorageSignal, 2000);
+  }
+  
+  // ... resto del juego igual ...
+</script>
